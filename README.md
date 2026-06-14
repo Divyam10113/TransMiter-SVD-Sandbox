@@ -19,3 +19,8 @@ Running `python transmiter.py` simulates the extraction on synthetic logits (`[B
 Initial Distance between models: 1.9843
 Distance after SVD Alignment: 0.0167
 Alignment successful. Zero backpropagation required.
+
+--- Testing MLP Scaling Parameter ---
+Adapter variance with scale=1.0: 0.1238
+Adapter variance with scale=0.5: 0.1142
+Scaling successfully suppresses adaptation magnitude.
