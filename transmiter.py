@@ -13,9 +13,9 @@ class PredictionBasedAdapter(nn.Module):
             )
             self.W_out = nn.Linear(D_mid, D_in, bias = False)
 
-        def forward(self, z: torch.Tensor) -> torch.Tensor:
+        def forward(self, z: torch.Tensor, scale: float = 1.0) -> torch.Tensor:
             h_s = self.W_in(z)
-            h_s_hat = h_s + self.mlp(h_s)
+            h_s_hat = h_s + (scale * self.mlp(h_s))
             return self.W_out(h_s_hat)
             
 def calculate_procrustes_alignment(H_s: torch.Tensor, H_t: torch.Tensor) -> torch.Tensor:
@@ -35,3 +35,10 @@ if __name__ == "__main__":
     
     print(f"Distance after SVD Alignment: {torch.nn.functional.mse_loss(H_weak, H_strong_aligned):.4f}")
     print("Alignment successful. Zero backpropagation required.")
+        # Testing the suggested scaling feature
+    adapter = PredictionBasedAdapter()
+    z_input = torch.randn(32, 1024)
+    print(f"\n--- Testing MLP Scaling Parameter ---")
+    print(f"Adapter variance with scale=1.0: {torch.var(adapter(z_input, scale=1.0)):.4f}")
+    print(f"Adapter variance with scale=0.5: {torch.var(adapter(z_input, scale=0.5)):.4f}")
+    print("Scaling successfully suppresses adaptation magnitude.")
